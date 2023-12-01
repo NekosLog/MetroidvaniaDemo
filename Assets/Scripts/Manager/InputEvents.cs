@@ -1,162 +1,89 @@
-/* 制作日 2023/11/30
+/* 制作日 2023/11/30～
 *　製作者 猫の足跡
-*　最終更新日 2023/11/30
+*　最終更新日 2023/12/01
 */
 
 using System;
 using System.Collections.Generic;
  
-public class InputEvents:IFSetInputEvents,IFGetInputEvents
+public class InputEvents
 {
-    public delegate void InputDelegate();
+    // 入力時間の管理配列　要素数は入力の種類
+    private float[] _inputTimer = new float[13];
 
-    public InputDelegate _rightEvent;
-    public InputDelegate _leftEvent;
-    public InputDelegate _upEvent;
-    public InputDelegate _downEvent;
-    public InputDelegate _actionEvent;
-    public InputDelegate _jumpEvent;
-    public InputDelegate _dashEvent;
-    public InputDelegate _attackEvent;
-    public InputDelegate _healEvent;
-    public InputDelegate _skill1Event;
-    public InputDelegate _skill2Event;
-    public InputDelegate _menuEvent;
-    public InputDelegate _mapEvent;
-
-
-
-    #region GetEvents
-    public void GetRightEvent()
+    /// <summary>
+    /// 入力に応じた押している時の処理を実行するクラス
+    /// </summary>
+    /// <param name="inputType"></param>
+    public void Execution(E_InputType inputType)
     {
-        throw new System.NotImplementedException();
+        switch (inputType)
+        {
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+
+            case E_InputType. :
+
+                break;
+        }
+        _inputTimer[inputType] += Time.deltaTime;
     }
 
-    public void GetLeftEvent()
+    /// <summary>
+    /// 入力のに応じた離した時の処理を実行するクラス
+    /// </summary>
+    /// <param name="inputType"></param>
+    public void Exit(E_InputType inputType)
     {
-        throw new System.NotImplementedException();
-    }
+        switch (inputType)
+        {
 
-    public void GetUpEvent()
-    {
-        throw new System.NotImplementedException();
+        }
+        _inputTimer[inputType] = 0f;
     }
-
-    public void GetDownEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetActionEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetJumpEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetDashEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetAttackEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetHealEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetSkill1Event()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetSkill2Event()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetMenuEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void GetMapEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-    #endregion
-
-    #region SetEvents
-    public void SetRightEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetLeftEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetUpEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetDownEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetActionEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetJumpEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetDashEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetAttackEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetHealEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetSkill1Event(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetSkill2Event(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetMenuEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetMapEvent(List<Action> eventList)
-    {
-        throw new NotImplementedException();
-    }
-    #endregion
 }
