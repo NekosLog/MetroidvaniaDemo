@@ -8,11 +8,21 @@ using System.Collections;
  
 public class InputManager : MonoBehaviour 
 {
+	// InputEvent
+	private InputEvents _inputEvents = default;
+
+	// 入力判定の最低値
 	private const float INPUT_MINIMUN_VALUE = 0.71f;
+	// 入力判定の最大値
+	private const float INPUT_MAXIMAM_VALUE = 1f;
+
+	// 入力中かどうか　要素数は入力の種類
+	private bool[] _inputStates = new bool[13];
  
 	private void Awake()
 	{
-	}
+        _inputEvents = this.gameObject.GetComponent<InputEvents>();
+    }
 	
 	private void Start()
 	{
@@ -20,6 +30,19 @@ public class InputManager : MonoBehaviour
 
 	private void Update()
 	{
+		InputSystem(E_InputType.Right, Input.GetAxisRaw("Horizontal"));
+		InputSystem(E_InputType.Left , -Input.GetAxisRaw("Horizontal"));
+		InputSystem(E_InputType.Up, Input.GetAxisRaw("Vertical"));
+		InputSystem(E_InputType.Down , -Input.GetAxisRaw("Vertical"));
+		InputSystem(E_InputType.Action , Input.GetAxisRaw("Action"));
+		InputSystem(E_InputType.Jump , Input.GetAxisRaw("Jump"));
+		InputSystem(E_InputType.Dash , Input.GetAxisRaw("Dash"));
+		InputSystem(E_InputType.Attack , Input.GetAxisRaw("Attack"));
+		InputSystem(E_InputType.Heal , Input.GetAxisRaw("Heal"));
+		InputSystem(E_InputType.Skill1 , Input.GetAxisRaw("Skill1"));
+		InputSystem(E_InputType.Skill2 , Input.GetAxisRaw("Skill2"));
+		InputSystem(E_InputType.Menu , Input.GetAxisRaw("Menu"));
+		InputSystem(E_InputType.Map , Input.GetAxisRaw("Map"));
 	}
 
 	private void OnDestroy()
@@ -28,50 +51,19 @@ public class InputManager : MonoBehaviour
 
 	private void InputSystem(E_InputType inputType ,float inputValue)
     {
-        if (inputValue > INPUT_MINIMUN_VALUE)
-        {
-            switch (inputType)
+		int inputNumber = (int)inputType;
+		if (inputValue > INPUT_MINIMUN_VALUE)
+		{
+			_inputEvents.Execution(inputType);
+            if (!_inputStates[inputNumber])
             {
-				case E_InputType.Right:
-
-					break;
-				case E_InputType.Left:
-
-					break;
-				case E_InputType.Up:
-
-					break;
-				case E_InputType.Down:
-
-					break;
-				case E_InputType.Action:
-
-					break;
-				case E_InputType.Jump:
-
-					break;
-				case E_InputType.Dash:
-
-					break;
-				case E_InputType.Attack:
-
-					break;
-				case E_InputType.Heal:
-
-					break;
-				case E_InputType.Skill1:
-
-					break;
-				case E_InputType.Skill2:
-
-					break;
-				case E_InputType.Menu:
-
-					break;
-				case E_InputType.Map:
-
-					break;
-			}
-        }
+				_inputStates[inputNumber] = true;
+            }
+		}
+		else if (_inputStates[inputNumber])
+		{
+			_inputEvents.Exit(inputType);
+			_inputStates[inputNumber] = false;
+		}
     }
 }

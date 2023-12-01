@@ -3,10 +3,9 @@
 *　最終更新日 2023/12/01
 */
 
-using System;
-using System.Collections.Generic;
+using UnityEngine;
  
-public class InputEvents
+public class InputEvents:MonoBehaviour
 {
     // 入力時間の管理配列　要素数は入力の種類
     private float[] _inputTimer = new float[13];
@@ -19,59 +18,59 @@ public class InputEvents
     {
         switch (inputType)
         {
-            case E_InputType. :
+            case E_InputType.Right:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Left:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Up:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Down:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Action:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Jump:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Dash:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Attack:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Heal:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Skill1:
 
                 break;
 
-            case E_InputType. :
+            case E_InputType.Skill2:
 
                 break;
 
-            case E_InputType. :
-
+            case E_InputType.Menu:
+                
                 break;
 
-            case E_InputType. :
+            case E_InputType.Map:
 
                 break;
         }
-        _inputTimer[inputType] += Time.deltaTime;
+        _inputTimer[(int)inputType] += Time.deltaTime;
     }
 
     /// <summary>
@@ -82,8 +81,58 @@ public class InputEvents
     {
         switch (inputType)
         {
+            case E_InputType.Right:
 
+                break;
+
+            case E_InputType.Left:
+
+                break;
+
+            case E_InputType.Up:
+
+                break;
+
+            case E_InputType.Down:
+
+                break;
+
+            case E_InputType.Action:
+
+                break;
+
+            case E_InputType.Jump:
+
+                break;
+
+            case E_InputType.Dash:
+
+                break;
+
+            case E_InputType.Attack:
+
+                break;
+
+            case E_InputType.Heal:
+
+                break;
+
+            case E_InputType.Skill1:
+
+                break;
+
+            case E_InputType.Skill2:
+
+                break;
+
+            case E_InputType.Menu:
+
+                break;
+
+            case E_InputType.Map:
+
+                break;
         }
-        _inputTimer[inputType] = 0f;
+        _inputTimer[(int)inputType] = 0f;
     }
 }
