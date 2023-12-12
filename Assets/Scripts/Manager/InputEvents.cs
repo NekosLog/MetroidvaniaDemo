@@ -1,5 +1,5 @@
 /* 制作日 2023/11/30～
-*　製作者 猫の足跡
+*　製作者 ニシガキ
 *　最終更新日 2023/12/01
 */
 
@@ -10,6 +10,14 @@ public class InputEvents:MonoBehaviour
     // 入力時間の管理配列　要素数は入力の種類
     private float[] _inputTimer = new float[13];
 
+    // PlayerMoveのインターフェース
+    private IFPlayerMove _playerMove = default;
+
+    private void Awake()
+    {
+        _playerMove = GameObject.FindObjectOfType<PlayerMove>();
+    }
+
     /// <summary>
     /// 入力に応じた押している時の処理を実行するクラス
     /// </summary>
@@ -19,10 +27,12 @@ public class InputEvents:MonoBehaviour
         switch (inputType)
         {
             case E_InputType.Right:
+                _playerMove.PlayerWalking(inputType);
 
                 break;
 
             case E_InputType.Left:
+                _playerMove.PlayerWalking(inputType);
 
                 break;
 
