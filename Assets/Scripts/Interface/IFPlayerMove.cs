@@ -8,4 +8,6 @@ using UnityEngine;
 public interface IFPlayerMove 
 {
     void PlayerWalking(E_InputType inputType);
+
+    void PlayerJump();
 }

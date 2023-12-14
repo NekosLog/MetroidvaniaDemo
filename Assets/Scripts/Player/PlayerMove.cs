@@ -6,29 +6,46 @@
 using UnityEngine;
 using System.Collections;
  
-public class PlayerMove : MonoBehaviour ,IFPlayerMove
+public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
 {
+    // Fallのインターフェース
+    private IFFallObject _fall = default;
+
     // プレイヤーのトランスフォーム
     private Transform _player = default;
 
     // プレイヤーの左右移動速度
-    private const float PLAYER_MALK_SPEED = 3f;
+    private const float PLAYER_MALK_SPEED = 6f;
 
     // プレイヤーの歩行の移動加算量
     private Vector2 _walkValue = new Vector2(PLAYER_MALK_SPEED, 0);
 
-    // プレイヤーの上下の移動加算量
-    private Vector2 _fallValue = default;
+    // プレイヤーの跳躍力
+    private const float PLAYER_JUMP_POWER = 15f;
+
+    // 二段ジャンプができるかどうかのフラグ
+    private bool _canDoubleJump = true;
+
+    // 二段ジャンプを使用しているかどうか
+    private bool _useJump = false;
+
+    // プレイヤーの横幅
+    [SerializeField]
+    private float _playerDepth = default;
+
+    // プレイヤーの下の幅
+    [SerializeField]
+    private float _playerBottom = default;
 
     private void Awake()
     {
         // プレイヤーのトランスフォームを取得
         _player = this.transform;
-    }
 
-    private void Update()
-    {
-        
+        // _fallに自身が持つFallを代入
+        _fall = this.gameObject.GetComponent<Fall>();
+        // Fallの初期値設定
+        _fall.SetObjectSize(_playerDepth, _playerBottom);
     }
 
     /// <summary>
@@ -65,14 +82,31 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove
     /// <summary>
     /// プレイヤーの落下や上昇を行うメソッド
     /// </summary>
-    private void PlayerFall(bool isLanding)
+    public void PlayerJump()
     {
-        if (isLanding)
+        if (_canDoubleJump)
         {
-            _fallValue = Vector2.zero;
-        }
+            if (!_useJump)
+            {
+                _fall.SetFallValue(PLAYER_JUMP_POWER);
+                if (!_fall.CheckLanding())
+                {
+                    _useJump = true;
+                }
+            }
 
-        // プレイヤーを移動
-        _player.position += (Vector3)_fallValue * Time.deltaTime;
+        }
+        else
+        {
+            if (_fall.CheckLanding())
+            {
+                _fall.SetFallValue(PLAYER_JUMP_POWER);
+            }
+        }
+    }
+
+    public void LandingEvent()
+    {
+        _useJump = false;
     }
 }
