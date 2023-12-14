@@ -29,6 +29,12 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     // 二段ジャンプを使用しているかどうか
     private bool _useJump = false;
 
+    // 歩けるかどうかのフラグ
+    private bool _canWalk = true;
+
+    // ダッシュが可能かどうか
+    private bool _canDash = true;
+
     // プレイヤーの横幅
     [SerializeField]
     private float _playerDepth = default;
@@ -54,29 +60,44 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     /// <param name="inputType">入力されたキー</param>
     public void PlayerWalking(E_InputType inputType)
     {
-        // 移動方向
-        int direction;
+        // 歩ける状態のときのみ
+        if (_canWalk)
+        {
+            // 移動方向
+            int direction;
 
-        // 入力から移動方向を設定
-        if (inputType == E_InputType.Right)
-        {
-            // 右に移動
-            direction = 1;
-        }
-        else if (inputType == E_InputType.Left)
-        {
-            // 左に移動
-            direction = -1;
-        }
-        else
-        {
-            // エラー入力
-            direction = 0;
-            Debug.LogError("移動入力に異常あり:入力が左右以外");
-        }
+            // 入力から移動方向を設定
+            if (inputType == E_InputType.Right)
+            {
+                // 右に移動
+                direction = 1;
+            }
+            else if (inputType == E_InputType.Left)
+            {
+                // 左に移動
+                direction = -1;
+            }
+            else
+            {
+                // エラー入力
+                direction = 0;
+                Debug.LogError("移動入力に異常あり:入力が左右以外");
+            }
 
-        // プレイヤーを移動
-        _player.position += (Vector3)_walkValue * direction * Time.deltaTime;
+            // プレイヤーを移動
+            _player.position += (Vector3)_walkValue * direction * Time.deltaTime;
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーのダッシュを行うメソッド
+    /// </summary>
+    public void PlayerDash()
+    {
+        if (_canDash)
+        {
+            
+        }
     }
 
     /// <summary>
