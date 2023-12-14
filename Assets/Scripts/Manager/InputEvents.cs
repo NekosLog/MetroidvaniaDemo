@@ -49,6 +49,10 @@ public class InputEvents:MonoBehaviour
                 break;
 
             case E_InputType.Jump:
+                if(_inputTimer[(int)inputType] == 0)
+                {
+                    _playerMove.PlayerJump();
+                }
 
                 break;
 
