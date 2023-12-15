@@ -22,7 +22,7 @@ public class Fall : MonoBehaviour,IFFallObject
     // 終端速度
     private const float TERMINAL = -15f;
 
-    // オブジェクトの太さ　着地判定の幅を決めるのに使用
+    // オブジェクトの太さ　着地判定の幅を決めるのに使用　横幅の半分
     private float _objectDepth = default;
 
     // オブジェクトの下の幅　着地判定の出始めを決めるのに使用
@@ -81,7 +81,7 @@ public class Fall : MonoBehaviour,IFFallObject
     public bool CheckLanding()
     {
         // レイの長さ
-        float rayLength = 0.1f;
+        float rayLength = 0.02f;
 
         // ステージのレイヤーマスク
         LayerMask groundLayer = 1 << 6;
@@ -112,7 +112,7 @@ public class Fall : MonoBehaviour,IFFallObject
     public void SetObjectSize(float objectDepth, float objectBottom)
     {
         // 各値を設定
-        _objectDepth = objectDepth;
+        _objectDepth = objectDepth / 2; // 横幅の半分
         _objectBottom = objectBottom;
     }
 }

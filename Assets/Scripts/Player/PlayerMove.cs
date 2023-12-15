@@ -11,6 +11,9 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     // Fallのインターフェース
     private IFFallObject _fall = default;
 
+    // CheckWallのインターフェース
+    private IFCheckWall _checkWall = default;
+
     // プレイヤーのトランスフォーム
     private Transform _player = default;
 
@@ -39,9 +42,17 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     [SerializeField]
     private float _playerDepth = default;
 
+    // プレイヤーの上の幅
+    [SerializeField]
+    private float _playerTop = default;
+
     // プレイヤーの下の幅
     [SerializeField]
     private float _playerBottom = default;
+
+    // 接触判定の細かさ
+    [SerializeField]
+    private int _checkValue = default;
 
     private void Awake()
     {
@@ -49,9 +60,16 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
         _player = this.transform;
 
         // _fallに自身が持つFallを代入
-        _fall = this.gameObject.GetComponent<Fall>();
+        _fall = this.GetComponent<Fall>();
+
+        // _checkWallに自身が持つCheckWallを代入
+        _checkWall = this.GetComponent<CheckWall>();
+
         // Fallの初期値設定
         _fall.SetObjectSize(_playerDepth, _playerBottom);
+
+        // CheckWallの初期値設定
+        _checkWall.SetValue(_playerTop, _playerBottom, _playerDepth, _checkValue);
     }
 
     /// <summary>
@@ -69,13 +87,31 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
             // 入力から移動方向を設定
             if (inputType == E_InputType.Right)
             {
-                // 右に移動
-                direction = 1;
+                // 壁と接触しているかどうか
+                if (!_checkWall.CheckHit(E_InputType.Right))
+                {
+                    // 右に移動
+                    direction = 1;
+                }
+                else
+                {
+                    // 壁と接触中
+                    direction = 0;
+                }
             }
             else if (inputType == E_InputType.Left)
             {
-                // 左に移動
-                direction = -1;
+                // 壁と接触しているかどうか
+                if (!_checkWall.CheckHit(E_InputType.Left))
+                {
+                    // 左に移動
+                    direction = -1;
+                }
+                else
+                {
+                    // 壁と接触中
+                    direction = 0;
+                }
             }
             else
             {
