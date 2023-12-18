@@ -8,11 +8,15 @@ using System.Collections;
  
 public class TestEnemy : MonoBehaviour ,IFLandingEvent
 {
- 
+	private int _speed = -1;
+	IFCheckWall check;
+	E_InputType forward = E_InputType.Left;
 	private void Awake()
 	{
 		IFFallObject fall = this.GetComponent<IFFallObject>();
-		fall.SetObjectSize(0.5f,0.5f);
+		check = this.GetComponent<IFCheckWall>();
+		fall.SetObjectSize(1f,0.5f);
+		check.SetValue(0.5f,0.5f,1,0);
 	}
 	
 	private void Start()
@@ -21,7 +25,20 @@ public class TestEnemy : MonoBehaviour ,IFLandingEvent
 
 	private void Update()
 	{
-		this.transform.position += -Vector3.right * Time.deltaTime;
+		this.transform.position += _speed * Vector3.right * Time.deltaTime;
+
+        if (check.CheckHit(forward))
+        {
+            if (forward == E_InputType.Left)
+            {
+				forward = E_InputType.Right;
+            }
+            else
+            {
+				forward = E_InputType.Left;
+            }
+			_speed = _speed * -1;
+        }
 	}
 
 	private void OnDestroy()
