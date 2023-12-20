@@ -162,6 +162,9 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
         }
     }
 
+    /// <summary>
+    /// 着地時の処理
+    /// </summary>
     public void LandingEvent()
     {
         _useJump = false;
