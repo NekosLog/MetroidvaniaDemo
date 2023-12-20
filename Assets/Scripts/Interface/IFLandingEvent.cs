@@ -2,8 +2,6 @@
 *　製作者 ニシガキ
 *　最終更新日 2023/12/14
 */
-
-using UnityEngine;
  
 public interface IFLandingEvent 
 {

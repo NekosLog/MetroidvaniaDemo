@@ -6,17 +6,19 @@
 using UnityEngine;
 using System.Collections; 
 
-public class PlayerState : MonoBehaviour
+public class PlayerState : MonoBehaviour, IFPlayerState
 {
-    private bool _canWalk = false;
-    private bool _canJump = false;
-    private bool _canDash = false;
-    private bool _canCrouch = false;
-    private bool _canAction = false;
-    private bool _canAttack = false;
-    private bool _canHeal = false;
-    private bool _canSkill1 = false;
-    private bool _canSkill2 = false;
+    #region State一覧
+    private bool _canWalk = true;
+    private bool _canJump = true;
+    private bool _canDash = true;
+    private bool _canCrouch = true;
+    private bool _canAction = true;
+    private bool _canAttack = true;
+    private bool _canHeal = true;
+    private bool _canSkill1 = true;
+    private bool _canSkill2 = true;
+    #endregion
 
     /// <summary>
     /// PlayerStateを取得するためのプロパティ
@@ -25,6 +27,7 @@ public class PlayerState : MonoBehaviour
     /// <returns></returns>
     public bool GetState(E_PlayerState state)
     {
+        // 取得するStateを選定
         switch (state)
         {
             case E_PlayerState.Walk:
@@ -54,6 +57,7 @@ public class PlayerState : MonoBehaviour
             case E_PlayerState.Skill2:
                 return _canSkill2;
         }
+        // 例外処理
         Debug.LogError("PlayerStateに異常あり");
         return false;
     }
@@ -65,6 +69,7 @@ public class PlayerState : MonoBehaviour
     /// <param name="value">設定する値</param>
     public void SetState(E_PlayerState state, bool value)
     {
+        // 設定するStateを選定
         switch (state)
         {
             case E_PlayerState.Walk:
@@ -103,69 +108,32 @@ public class PlayerState : MonoBehaviour
                 _canSkill2 = value;
                 break;
         }
-    }
-
-    #region セット用プロパティ
-    /// <summary>
-    /// PlayerStateの値を設定するプロパティ
-    /// </summary>
-    /// <param name="state1">設定するState</param>
-    /// <param name="state2">設定するState</param>
-    /// <param name="value">設定する値</param>
-    public void SetState(E_PlayerState state1 , E_PlayerState state2, bool value)
-    {
-        SetState(state1, value);
-        SetState(state2, value);
+        // 例外処理
+        Debug.LogError("PlayerStateに異常あり");
     }
 
     /// <summary>
-    /// PlayerStateの値を設定するプロパティ
+    /// <para>PlayerStateの値を設定するプロパティ</para>
+    /// <para>指定した時間待ってから実行</para>
     /// </summary>
-    /// <param name="state1">設定するState</param>
-    /// <param name="state2">設定するState</param>
-    /// <param name="state3">設定するState</param>
+    /// <param name="state">設定するState</param>
     /// <param name="value">設定する値</param>
-    public void SetState(E_PlayerState state1, E_PlayerState state2, E_PlayerState state3, bool value)
+    /// <param name="delayTime">処理を待つ時間</param>
+    public void SetState(E_PlayerState state, bool value, float delayTime)
     {
-        SetState(state1, value);
-        SetState(state2, value);
-        SetState(state3, value);
+        StartCoroutine(DelaySet(state, value, delayTime));
     }
 
     /// <summary>
-    /// PlayerStateの値を設定するプロパティ
+    /// 指定した時間待ってから実装するためのコルーチン
     /// </summary>
-    /// <param name="state1">設定するState</param>
-    /// <param name="state2">設定するState</param>
-    /// <param name="state3">設定するState</param>
-    /// <param name="state4">設定するState</param>
     /// <param name="value">設定する値</param>
-    public void SetState(E_PlayerState state1, E_PlayerState state2, E_PlayerState state3, E_PlayerState state4, bool value)
+    /// <param name="delayTime">処理を待つ時間</param>
+    private IEnumerator DelaySet(E_PlayerState state, bool value, float delayTime)
     {
-        SetState(state1, value);
-        SetState(state2, value);
-        SetState(state3, value);
-        SetState(state4, value);
+        yield return new WaitForSeconds(delayTime);
+        SetState(state, value);
     }
-
-    /// <summary>
-    /// PlayerStateの値を設定するプロパティ
-    /// </summary>
-    /// <param name="state1">設定するState</param>
-    /// <param name="state2">設定するState</param>
-    /// <param name="state3">設定するState</param>
-    /// <param name="state4">設定するState</param>
-    /// <param name="state5">設定するState</param>
-    /// <param name="value">設定する値</param>
-    public void SetState(E_PlayerState state1, E_PlayerState state2, E_PlayerState state3, E_PlayerState state4, E_PlayerState state5, bool value)
-    {
-        SetState(state1, value);
-        SetState(state2, value);
-        SetState(state3, value);
-        SetState(state4, value);
-        SetState(state5, value);
-    }
-    #endregion
 
     /// <summary>
     /// すべてのStateに値を設定するプロパティ
@@ -192,16 +160,15 @@ public class PlayerState : MonoBehaviour
     /// <param name="delayTime">処理を待つ時間</param>
     public void SetAllState(bool value, float delayTime)
     {
-        StartCoroutine(DelaySet(value, delayTime));
+        StartCoroutine(DelaySetAll(value, delayTime));
     }
 
     /// <summary>
     /// 指定した時間待ってから実装するためのコルーチン
     /// </summary>
-    /// <param name="value"></param>
-    /// <param name="delayTime"></param>
-    /// <returns></returns>
-    private IEnumerator DelaySet(bool value, float delayTime)
+    /// <param name="value">設定する値</param>
+    /// <param name="delayTime">処理を待つ時間</param>
+    private IEnumerator DelaySetAll(bool value, float delayTime)
     {
         yield return new WaitForSeconds(delayTime);
         SetAllState(value);

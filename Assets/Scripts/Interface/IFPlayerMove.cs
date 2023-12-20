@@ -1,13 +1,14 @@
-/* 制作日
-*　製作者
-*　最終更新日
+/* 制作日 2023/12/15
+*　製作者 ニシガキ
+*　最終更新日 2023/12/15
 */
-
-using UnityEngine;
  
 public interface IFPlayerMove 
 {
     void PlayerWalking(E_InputType inputType);
 
     void PlayerJump();
+
+    void PlayerDash();
+
 }

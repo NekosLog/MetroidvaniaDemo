@@ -57,7 +57,10 @@ public class InputEvents:MonoBehaviour
                 break;
 
             case E_InputType.Dash:
-
+                if (_inputTimer[(int)inputType] == 0)
+                {
+                    _playerMove.PlayerDash();
+                }
                 break;
 
             case E_InputType.Attack:

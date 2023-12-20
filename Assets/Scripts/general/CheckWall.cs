@@ -86,7 +86,7 @@ public class CheckWall : MonoBehaviour, IFCheckWall
         }
 
         // レイの長さ
-        float rayLength = 0.02f;
+        float rayLength = 0.05f;
 
         // ステージのレイヤーマスク
         LayerMask groundLayer = 1 << 6;
