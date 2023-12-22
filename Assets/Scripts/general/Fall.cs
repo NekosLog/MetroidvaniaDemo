@@ -7,26 +7,34 @@ using UnityEngine;
  
 public class Fall : MonoBehaviour,IFFallObject
 {
-    // 落下時のイベント
-    private IFLandingEvent _landingEvent = default;
+    #region フィールド変数
 
-    // オブジェクトの落下量
-    private Vector2 _fallValue = default;
-
-    // 落下するオブジェクト
-    private Transform _object = default;
-
+    #region 定数
     // 重力の大きさ
     private const float GRAVITY = 35.0f;
 
     // 終端速度
     private const float TERMINAL = -15f;
+    #endregion
+
+    #region インターフェース
+    // 落下時のイベントを渡すためのインターフェース
+    private IFLandingEvent _landingEvent = default;
+    #endregion
+
+    // 落下するオブジェクト
+    private Transform _object = default;
+
+    // オブジェクトの落下量
+    private Vector2 _fallValue = default;
 
     // オブジェクトの太さ　着地判定の幅を決めるのに使用　横幅の半分
     private float _objectDepth = default;
 
     // オブジェクトの下の幅　着地判定の出始めを決めるのに使用
     private float _objectBottom = default;
+
+    #endregion
 
 
     private void Awake()

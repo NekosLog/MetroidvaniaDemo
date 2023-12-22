@@ -7,8 +7,10 @@ using UnityEngine;
  
 public class CheckWall : MonoBehaviour, IFCheckWall
 {
-	// 自身のオブジェクト
-	private Transform _object = default;
+    #region フィールド変数
+
+    // 自身のオブジェクト
+    private Transform _object = default;
     
 	// オブジェクトの下の幅　接触判定の下端を決めるのに使用
     private float _objectBottom = default;
@@ -21,6 +23,8 @@ public class CheckWall : MonoBehaviour, IFCheckWall
 
 	// 判定の間隔　上下端と本数によって変動
 	private float _checkDistance = default;
+
+    #endregion
 
     private void Awake()
     {
