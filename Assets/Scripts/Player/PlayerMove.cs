@@ -4,27 +4,14 @@
 */
 
 using UnityEngine;
-using System.Collections;
  
 public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
 {
-    // Fallのインターフェース
-    private IFFallObject _fall = default;
+    #region フィールド変数
 
-    // CheckWallのインターフェース
-    private IFCheckWall _checkWall = default;
-
-    // PlayerStateのインターフェース
-    private IFPlayerState _playerState = default;
-
-    // プレイヤーのトランスフォーム
-    private Transform _player = default;
-
+    #region 定数
     // プレイヤーの左右移動速度
     private const float PLAYER_MALK_SPEED = 6f;
-
-    // プレイヤーの歩行の移動加算量
-    private Vector2 _walkValue = new Vector2(PLAYER_MALK_SPEED, 0);
 
     // プレイヤーの跳躍力
     private const float PLAYER_JUMP_POWER = 15f;
@@ -32,39 +19,11 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     // プレイヤーのダッシュ速度
     private const float PLAYER_DASH_SPEED = 20f;
 
-    // プレイヤーのダッシュの移動加算量
-    private Vector2 _dashValue = new Vector2(PLAYER_DASH_SPEED, 0);
-
-    // 二段ジャンプができるかどうかのフラグ
-    private bool _canDoubleJump = true;
-
-    // 二段ジャンプを使用しているかどうか
-    private bool _useJump = false;
-
-    // 歩行可否フラグ
-    private bool _canWalk = true;
-
-    // ダッシュ可否フラグ　trueでダッシュ可能
-    private bool _canDash = true;
-
-    // ダッシュ中フラグ　trueでダッシュ中
-    private bool _nowDash = false;
-
-    // ダッシュの継続時間
-    private float _dashTime = 0.2f;
-
-    // プレイヤーが向いている正面方向
-    private int _playerForword = 1;
-
-    // ダッシュの使用間隔を測る変数
-    private float _dashInterval = 0f;
-
     // ダッシュの再使用までの時間
     private const float DASH_INTERVAL_TIME = 0.6f;
+    #endregion
 
-    // ダッシュ開始からの経過時間
-    private float _nowDashTime = 0f;
-
+    #region シリアライズ
     // プレイヤーの横幅
     [SerializeField]
     private float _playerDepth = default;
@@ -80,6 +39,51 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     // 接触判定の細かさ
     [SerializeField]
     private int _checkValue = default;
+    #endregion
+
+    #region インターフェース
+    // Fallのインターフェース
+    private IFFallObject _fall = default;
+
+    // CheckWallのインターフェース
+    private IFCheckWall _checkWall = default;
+
+    // PlayerStateのインターフェース
+    private IFPlayerState _playerState = default;
+    #endregion
+
+    // プレイヤーのトランスフォーム
+    private Transform _player = default;
+
+    // プレイヤーの歩行の移動加算量
+    private Vector2 _walkValue = new Vector2(PLAYER_MALK_SPEED, 0);
+
+    // プレイヤーのダッシュの移動加算量
+    private Vector2 _dashValue = new Vector2(PLAYER_DASH_SPEED, 0);
+
+    // ダッシュの継続時間
+    private float _dashTime = 0.2f;
+
+    // ダッシュの使用間隔を測る変数
+    private float _dashInterval = 0f;
+
+    // ダッシュ開始からの経過時間
+    private float _nowDashTime = 0f;
+
+    // プレイヤーが向いている正面方向
+    private int _playerForword = 1;
+
+    // 二段ジャンプができるかどうかのフラグ
+    private bool _canDoubleJump = true;
+
+    // ジャンプトークン　二段ジャンプを使用したかどうか
+    private bool _jumpToken = false;
+
+    // ダッシュ中フラグ　trueでダッシュ中
+    private bool _nowDash = false;
+
+    #endregion
+
 
     private void Awake()
     {
@@ -103,7 +107,8 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
 
     private void Update()
     {
-            Dash(_dashTime);
+        // ダッシュを行う
+        Dash(_dashTime);
     }
 
     /// <summary>
@@ -166,11 +171,19 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     /// </summary>
     public void PlayerDash()
     {
+        // ダッシュができる かつ インターバル中かどうか
         if (_playerState.GetState(E_PlayerState.Dash) && _dashInterval <= 0)
         {
+            // ダッシュ中に設定
             _nowDash = true;
+
+            // 操作入力を無効化
             _playerState.SetAllState(false);
+
+            // 一定時間後に操作入力を有効化
             _playerState.SetAllState(true, _dashTime);
+
+            // ダッシュのインターバル設定
             _dashInterval = DASH_INTERVAL_TIME;
         }
     }
@@ -211,14 +224,12 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
             }
         }
 
-        // 再使用までの時間をカウント
+        // インターバルのカウントダウン
         if (_dashInterval > 0)
         {
             // 時間をカウント
             _dashInterval -= Time.deltaTime;
         }
-
-        print(_dashInterval);
     }
 
     /// <summary>
@@ -226,23 +237,34 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     /// </summary>
     public void PlayerJump()
     {
-        if (_canDoubleJump)
+        // ジャンプが可能かどうか
+        if (_playerState.GetState(E_PlayerState.Jump))
         {
-            if (!_useJump)
+            // 二段ジャンプができるかどうか
+            if (_canDoubleJump)
             {
-                _fall.SetFallValue(PLAYER_JUMP_POWER);
-                if (!_fall.CheckLanding())
+                // ジャンプトークンがある場合
+                if (_jumpToken)
                 {
-                    _useJump = true;
-                }
-            }
+                    // 上昇力を設定
+                    _fall.SetFallValue(PLAYER_JUMP_POWER);
 
-        }
-        else
-        {
-            if (_fall.CheckLanding())
+                    // 空中の場合 ジャンプトークンを消費
+                    if (!_fall.CheckLanding())
+                    {
+                        _jumpToken = false;
+                    }
+                }
+
+            }
+            else
             {
-                _fall.SetFallValue(PLAYER_JUMP_POWER);
+                // 着地しているかどうか
+                if (_fall.CheckLanding())
+                {
+                    // 上昇力を設定
+                    _fall.SetFallValue(PLAYER_JUMP_POWER);
+                }
             }
         }
     }
@@ -252,6 +274,7 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     /// </summary>
     public void LandingEvent()
     {
-        _useJump = false;
+        // ジャンプトークンの回復
+        _jumpToken = true;
     }
 }
