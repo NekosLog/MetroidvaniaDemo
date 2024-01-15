@@ -5,7 +5,7 @@
 
 using UnityEngine;
  
-public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
+public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 {
     #region フィールド変数
 
@@ -42,14 +42,11 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
     #endregion
 
     #region インターフェース
-    // Fallのインターフェース
-    private IFFallObject _fall = default;
-
-    // CheckWallのインターフェース
-    private IFCheckWall _checkWall = default;
-
     // PlayerStateのインターフェース
     private IFPlayerState _playerState = default;
+
+    // Fallのインターフェース
+    private IFFall _fall = default;
     #endregion
 
     // プレイヤーのトランスフォーム
@@ -84,31 +81,30 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
 
     #endregion
 
-
-    private void Awake()
+    private void Start()
     {
         // プレイヤーのトランスフォームを取得
         _player = this.transform;
 
         // _fallに自身が持つFallを代入
-        _fall = this.GetComponent<Fall>();
-
-        // _checkWallに自身が持つCheckWallを代入
-        _checkWall = this.GetComponent<CheckWall>();
+        _fall = this.GetComponent<IFFall>();
 
         // _playerStateに自身が持つPlayerStateを代入
         _playerState = this.GetComponent<PlayerState>();
         // Fallの初期値設定
-        _fall.SetObjectSize(_playerDepth, _playerBottom);
+        CheckFloor.SetObjectSize(_playerDepth, _playerBottom);
 
         // CheckWallの初期値設定
-        _checkWall.SetValue(_playerTop, _playerBottom, _playerDepth, _checkValue);
+        CheckWall.SetValue(_playerTop, _playerBottom, _playerDepth, _checkValue);
     }
 
     private void Update()
     {
         // ダッシュを行う
         Dash(_dashTime);
+
+        _fall.FallObject(CheckFloor.CheckLanding());
+        
     }
 
     /// <summary>
@@ -127,7 +123,7 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
             if (inputType == E_InputType.Right)
             {
                 // 壁と接触しているかどうか
-                if (!_checkWall.CheckHit(E_InputType.Right))
+                if (!CheckWall.CheckHit(E_InputType.Right))
                 {
                     // 右に移動
                     direction = 1;
@@ -142,7 +138,7 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
             else if (inputType == E_InputType.Left)
             {
                 // 壁と接触しているかどうか
-                if (!_checkWall.CheckHit(E_InputType.Left))
+                if (!CheckWall.CheckHit(E_InputType.Left))
                 {
                     // 左に移動
                     direction = -1;
@@ -201,7 +197,7 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
             _nowDashTime += Time.deltaTime;
 
             // 壁と衝突していなければ前方へダッシュ
-            if (_playerForword == 1 && _checkWall.CheckHit(E_InputType.Right) || _playerForword == -1 && _checkWall.CheckHit(E_InputType.Left))
+            if (_playerForword == 1 && CheckWall.CheckHit(E_InputType.Right) || _playerForword == -1 && CheckWall.CheckHit(E_InputType.Left))
             {
                 // 壁と衝突
             }
@@ -250,7 +246,7 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
                     _fall.SetFallValue(PLAYER_JUMP_POWER);
 
                     // 空中の場合 ジャンプトークンを消費
-                    if (!_fall.CheckLanding())
+                    if (!CheckFloor.CheckLanding())
                     {
                         _jumpToken = false;
                     }
@@ -260,7 +256,7 @@ public class PlayerMove : MonoBehaviour ,IFPlayerMove, IFLandingEvent
             else
             {
                 // 着地しているかどうか
-                if (_fall.CheckLanding())
+                if (CheckFloor.CheckLanding())
                 {
                     // 上昇力を設定
                     _fall.SetFallValue(PLAYER_JUMP_POWER);

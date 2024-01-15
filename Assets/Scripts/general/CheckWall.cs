@@ -5,12 +5,19 @@
 
 using UnityEngine;
  
-public class CheckWall : MonoBehaviour, IFCheckWall
+public class CheckWall
 {
+    public CheckWall() { }
+
+    public CheckWall(Transform thisTransform)
+    {
+        _thisTransform = thisTransform;
+    }
+
     #region フィールド変数
 
     // 自身のオブジェクト
-    private Transform _object = default;
+    private Transform _thisTransform = default;
     
 	// オブジェクトの下の幅　接触判定の下端を決めるのに使用
     private float _objectBottom = default;
@@ -25,12 +32,6 @@ public class CheckWall : MonoBehaviour, IFCheckWall
 	private float _checkDistance = default;
 
     #endregion
-
-    private void Awake()
-    {
-        // 自身のオブジェクトを設定
-		_object = this.transform;
-    }
 
     /// <summary>
     /// 接触判定の設定用メソッド
@@ -99,7 +100,7 @@ public class CheckWall : MonoBehaviour, IFCheckWall
         for (int i = 0; i < _checkValue; i++)
         {
             // オブジェクトと接触しているか判定
-            RaycastHit2D isHit = Physics2D.Raycast(_object.position + _objectDepth * forwardVector - (_objectBottom - _checkDistance * i) * Vector3.up, forwardVector, rayLength, groundLayer);
+            RaycastHit2D isHit = Physics2D.Raycast(_thisTransform.position + _objectDepth * forwardVector - (_objectBottom - _checkDistance * i) * Vector3.up, forwardVector, rayLength, groundLayer);
 
             // オブジェクトに当たっているかどうか
             if (isHit.collider != null)

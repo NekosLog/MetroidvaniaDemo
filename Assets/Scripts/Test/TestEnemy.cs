@@ -6,28 +6,23 @@
 using UnityEngine;
 using System.Collections;
  
-public class TestEnemy : MonoBehaviour ,IFLandingEvent
+public class TestEnemy : MoveBase, IFLandingEvent
 {
 	private int _speed = -1;
-	IFCheckWall check;
 	E_InputType forward = E_InputType.Left;
-	private void Awake()
-	{
-		IFFallObject fall = this.GetComponent<IFFallObject>();
-		check = this.GetComponent<IFCheckWall>();
-		fall.SetObjectSize(1f,0.5f);
-		check.SetValue(0.5f,0.5f,1,0);
-	}
-	
+	IFFall _fall = default;
 	private void Start()
 	{
+		_fall = this.GetComponent<IFFall>();
+		CheckFloor.SetObjectSize(1f,0.5f);
+		CheckWall.SetValue(0.5f,0.5f,1,0);
 	}
 
 	private void Update()
 	{
 		this.transform.position += _speed * Vector3.right * Time.deltaTime;
 
-        if (check.CheckHit(forward))
+        if (CheckWall.CheckHit(forward))
         {
             if (forward == E_InputType.Left)
             {
@@ -39,10 +34,8 @@ public class TestEnemy : MonoBehaviour ,IFLandingEvent
             }
 			_speed = _speed * -1;
         }
-	}
 
-	private void OnDestroy()
-	{
+		_fall.FallObject(CheckFloor.CheckLanding());
 	}
 
     public void LandingEvent()
