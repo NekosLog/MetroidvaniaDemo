@@ -4,19 +4,41 @@
 */
 
 using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
  
 public class TestStage : MonoBehaviour 
 {
-    private CameraMove M = default;
+    [SerializeField]
+    StageDatas stagedatas = default;
 
-    public Vector2 a = new Vector2(0,0);
-    public float b = default;
-    public float c = default;
+    [SerializeField]
+    CameraMove M = default;
 
     private void Awake()
     {
-        M = GetComponent<CameraMove>();
-        M.SetStage(a,b,c);
+        SearchStage(StageNumberList.TEST1);
+    }
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            SearchStage(StageNumberList.TEST2);
+            GameObject.Find("Player").transform.position = new Vector2(50,50);
+        }
+    }
+
+    private void SearchStage(string stageNumber)
+    {
+        foreach (StageParameter emp in stagedatas.EnemyParamList)
+        {
+            if (emp.StageNumber == stageNumber)
+            {
+                M.SetStage(emp.CameraOrigin, emp.StageWidth, emp.StageHeight);
+                return;
+            }
+        }
+        Debug.LogError("ステージが見つかりませんでした。");
     }
 }

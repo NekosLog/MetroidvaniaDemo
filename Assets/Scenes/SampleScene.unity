@@ -481,9 +481,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf4fb2a271d9d2940b535d35f49e4174, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  a: {x: 2, y: 0}
-  b: 15
-  c: 10
+  stagedatas: {fileID: 11400000, guid: 9e311cf54875c1845982bef2ddaaf0c6, type: 2}
+  M: {fileID: 519420033}
 --- !u!1 &679852556
 GameObject:
   m_ObjectHideFlags: 0
