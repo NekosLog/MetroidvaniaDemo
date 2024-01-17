@@ -7,6 +7,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+[CreateAssetMenu(fileName = "StageDatas", menuName = "ScriptableObjects/CreateStageDatas")]
 public class StageDatas : ScriptableObject
 {
     public List<StageParameter> EnemyParamList = new List<StageParameter>();
@@ -18,4 +19,8 @@ public class StageParameter
     public string StageNumber = "ステージ番号";
 
     public Vector2 CameraOrigin = default;
+
+    public float StageWidth = default;
+
+    public float StageHeight = default;
 }
