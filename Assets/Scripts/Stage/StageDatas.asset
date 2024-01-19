@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81b2bd263e1e9064797e8e6b849b0077, type: 3}
   m_Name: StageDatas
   m_EditorClassIdentifier: 
-  EnemyParamList:
-  - StageNumber: 
-    CameraOrigin: {x: 0, y: 0}
-    StageWidth: 0
-    StageHeight: 0
+  StageParameterList:
+  - StageNumber: TEST1
+    CameraOrigin: {x: 0, y: 1}
+    StageWidth: 24
+    StageHeight: 8
+  - StageNumber: TEST2
+    CameraOrigin: {x: 90, y: 4}
+    StageWidth: 34
+    StageHeight: 11

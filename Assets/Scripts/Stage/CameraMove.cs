@@ -19,10 +19,12 @@ public class CameraMove : MonoBehaviour
     private const float MAX_DISTANCE_X = 3f;
     private const float MAX_DISTANCE_Y = 1.5f;
     private const float ORIGIN_DEFAULT_Z = -10f;
+    private const float CAMERA_WIDTH = 17.75f;
+    private const float CAMERA_HEIGHT = 0f;
 
     private void Awake()
     {
-        _player = GameObject.Find("Player").transform;
+        _player = GameObject.FindWithTag("Player").transform;
         _nowPosition = transform.position;
     }
 
@@ -70,13 +72,14 @@ public class CameraMove : MonoBehaviour
     /// <param name="origin">カメラ原点</param>
     /// <param name="width">横幅</param>
     /// <param name="height">縦幅</param>
-    public void SetStage(Vector2 origin, float width, float height)
+    public void SetStage(StageParameter stageParm)
     {
         // 各値を設定
-        _cameraOrigin = origin;             // カメラ原点
-        _cameraOrigin.z = ORIGIN_DEFAULT_Z; // カメラ距離
-        _stageWidth = width / 2;            // 横の範囲　原点からの距離　半分にする
-        _stageHeight = height / 2;          // 縦の範囲　原点からの距離　半分にする
+        _cameraOrigin = stageParm.CameraOrigin;     // カメラ原点
+        _cameraOrigin.z = ORIGIN_DEFAULT_Z;         // カメラ距離
+        _stageWidth = Mathf.Clamp(stageParm.StageWidth - CAMERA_WIDTH, 0, Mathf.Infinity) / 2;     // 横の範囲　原点からの距離だから半分にする
+        print(_stageWidth);
+        _stageHeight = stageParm.StageHeight / 2;   // 縦の範囲　原点からの距離だから半分にする
 
         // 位置情報の更新
         transform.position = _cameraOrigin; // カメラの位置を設定

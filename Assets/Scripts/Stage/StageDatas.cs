@@ -10,7 +10,7 @@ using System.Collections.Generic;
 [CreateAssetMenu(fileName = "StageDatas", menuName = "ScriptableObjects/CreateStageDatas")]
 public class StageDatas : ScriptableObject
 {
-    public List<StageParameter> EnemyParamList = new List<StageParameter>();
+    public List<StageParameter> StageParameterList = new List<StageParameter>();
 }
 
 [System.Serializable] 

@@ -4,33 +4,49 @@
 */
 
 using UnityEngine;
-using System.Collections;
  
 public class StageChenger : MonoBehaviour 
 {
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Player")
-        {
+    private StageDatas _stageDatas = default;
 
+    private CameraMove _cameraMove = default;
+
+    [SerializeField]
+    private Vector2 _spawnPosition = default;
+
+    [SerializeField]
+    private E_StageNumber _stageNumber = default;
+    private void Awake()
+    {
+        _stageDatas = GameObject.FindWithTag("StageDatas").GetComponent<StageDatasManager>().GetStageDatas();
+        _cameraMove = GameObject.FindWithTag("MainCamera").GetComponent<CameraMove>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        print("当たった");
+        if (collision.tag == "Player")
+        {
+            Teleportation(collision.transform, _spawnPosition);
+            _cameraMove.SetStage(SearchStage(_stageNumber.ToString()));
         }
     }
 
-    private void SearchStage(string stageNumber)
+    private StageParameter SearchStage(string stageNumber)
     {
-        foreach (StageParameter emp in stagedatas.EnemyParamList)
+        foreach (StageParameter parm in _stageDatas.StageParameterList)
         {
-            if (emp.StageNumber == stageNumber)
+            if (parm.StageNumber == stageNumber)
             {
-                M.SetStage(emp.CameraOrigin, emp.StageWidth, emp.StageHeight);
-                return;
+                return parm;
             }
         }
         Debug.LogError("ステージが見つかりませんでした。");
+        return null;
     }
 
-    private void Teleportation(Vector2 position)
+    private void Teleportation(Transform target, Vector2 position)
     {
-         
+        target.position = position;
     }
 }
