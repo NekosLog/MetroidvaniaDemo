@@ -64,7 +64,10 @@ public class InputEvents:MonoBehaviour
                 break;
 
             case E_InputType.Attack:
-
+                if (_inputTimer[(int)inputType] == 0)
+                {
+                    _playerMove.PlayerAttack();
+                }
                 break;
 
             case E_InputType.Heal:
