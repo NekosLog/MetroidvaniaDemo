@@ -8,5 +8,6 @@ public enum E_PlayerState
     Attack = 6,
     Heal = 7,
     Skill1 = 8,
-    Skill2 = 9
+    Skill2 = 9,
+    Rotate = 10
 }

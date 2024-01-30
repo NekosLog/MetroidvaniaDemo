@@ -18,7 +18,10 @@ public class PlayerState : MonoBehaviour, IFPlayerState
     private bool _canHeal = true;
     private bool _canSkill1 = true;
     private bool _canSkill2 = true;
+    private bool _canRotate = true;
     #endregion
+
+    private Coroutine _waitingCoroutine = default;
 
     /// <summary>
     /// PlayerStateを取得するためのプロパティ
@@ -56,6 +59,9 @@ public class PlayerState : MonoBehaviour, IFPlayerState
 
             case E_PlayerState.Skill2:
                 return _canSkill2;
+
+            case E_PlayerState.Rotate:
+                return _canRotate;
         }
         // 例外処理
         Debug.LogError("PlayerStateに異常あり");
@@ -74,39 +80,43 @@ public class PlayerState : MonoBehaviour, IFPlayerState
         {
             case E_PlayerState.Walk:
                 _canWalk = value;
-                break;
+                return;
 
             case E_PlayerState.Jump:
                 _canJump = value;
-                break;
+                return;
 
             case E_PlayerState.Dash:
                 _canDash = value;
-                break;
+                return;
 
             case E_PlayerState.Crouch:
                 _canCrouch = value;
-                break;
+                return;
 
             case E_PlayerState.Action:
                 _canAction = value;
-                break;
+                return;
 
             case E_PlayerState.Attack:
                 _canAttack = value;
-                break;
+                return;
 
             case E_PlayerState.Heal:
                 _canHeal = value;
-                break;
+                return;
 
             case E_PlayerState.Skill1:
                 _canSkill1 = value;
-                break;
+                return;
 
             case E_PlayerState.Skill2:
                 _canSkill2 = value;
-                break;
+                return;
+
+            case E_PlayerState.Rotate:
+                _canRotate = value;
+                return;
         }
         // 例外処理
         Debug.LogError("PlayerStateに異常あり");
@@ -121,7 +131,11 @@ public class PlayerState : MonoBehaviour, IFPlayerState
     /// <param name="delayTime">処理を待つ時間</param>
     public void SetState(E_PlayerState state, bool value, float delayTime)
     {
-        StartCoroutine(DelaySet(state, value, delayTime));
+        if (_waitingCoroutine != null)
+        {
+            StopCoroutine(_waitingCoroutine);
+        }
+        _waitingCoroutine = StartCoroutine(DelaySet(state, value, delayTime));
     }
 
     /// <summary>
@@ -150,6 +164,7 @@ public class PlayerState : MonoBehaviour, IFPlayerState
         _canHeal = value;
         _canSkill1 = value;
         _canSkill2 = value;
+        _canRotate = value;
     }
 
     /// <summary>
@@ -160,7 +175,11 @@ public class PlayerState : MonoBehaviour, IFPlayerState
     /// <param name="delayTime">処理を待つ時間</param>
     public void SetAllState(bool value, float delayTime)
     {
-        StartCoroutine(DelaySetAll(value, delayTime));
+        if (_waitingCoroutine != null)
+        {
+            StopCoroutine(_waitingCoroutine);
+        }
+        _waitingCoroutine = StartCoroutine(DelaySetAll(value, delayTime));
     }
 
     /// <summary>
@@ -172,5 +191,9 @@ public class PlayerState : MonoBehaviour, IFPlayerState
     {
         yield return new WaitForSeconds(delayTime);
         SetAllState(value);
+        if (_waitingCoroutine != null)
+        {
+            _waitingCoroutine = null;
+        }
     }
 }

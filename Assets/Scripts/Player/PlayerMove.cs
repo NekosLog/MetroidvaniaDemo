@@ -3,6 +3,7 @@
 *　最終更新日 2023/12/12
 */
 
+using System.Collections;
 using UnityEngine;
  
 public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
@@ -21,6 +22,21 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
     // ダッシュの再使用までの時間
     private const float DASH_INTERVAL_TIME = 0.6f;
+
+    // 攻撃の再使用までの時間
+    private const float ATTACK_INTERVAL_TIME = 0.25f;
+
+    // 攻撃後の行動可能になるまでの時間　攻撃後の硬直
+    private const float ATTACK_STIFFENING = 0.3f;
+
+    // 攻撃判定の持続時間
+    private const float ATTACK_LIFE_TIME = 0.1f;
+
+    // スキル１の消費SP量
+    private const int SKILL1_COST = 30;
+
+    // スキル１後の再行動可能になるまでの時間　硬直
+    private const float SKILL1_STIFFENING = 0.3f;
     #endregion
 
     #region シリアライズ
@@ -39,6 +55,14 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     // 接触判定の細かさ
     [SerializeField]
     private int _checkValue = default;
+
+    // 攻撃の判定コライダー
+    [SerializeField]
+    private Collider2D _attackCollider = default;
+
+    // スキル１で発射する球
+    [SerializeField]
+    private GameObject _skill1_Bullet = default;
     #endregion
 
     #region インターフェース
@@ -47,6 +71,9 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
     // Fallのインターフェース
     private IFFall _fall = default;
+
+    // PlayerParameterのインターフェース
+    private IFPlayerParameter _playerParameter = default;
     #endregion
 
     // プレイヤーのトランスフォーム
@@ -79,6 +106,12 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     // ダッシュ中フラグ　trueでダッシュ中
     private bool _nowDash = false;
 
+    // 攻撃の使用間隔を測る変数
+    private float _attackInterval = default;
+
+    // 攻撃後の再行動可能になるまでの時間を測る変数
+    private float _attackStiffening = default;
+
     #endregion
 
     private void Start()
@@ -91,6 +124,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
         // _playerStateに自身が持つPlayerStateを代入
         _playerState = this.GetComponent<PlayerState>();
+        // _playerParameterに自身が持つPlayerParameterを代入
+        _playerParameter = this.GetComponent<PlayerParamater>();
         // Fallの初期値設定
         CheckFloor.SetObjectSize(_playerDepth, _playerBottom);
 
@@ -100,11 +135,39 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
     private void Update()
     {
+        // 時間を測る
+        TimeCount();
+
         // ダッシュを行う
         Dash(_dashTime);
 
+        // 落下処理
         _fall.FallObject(CheckFloor.CheckLanding());
         
+    }
+
+    private void TimeCount()
+    {
+        // ダッシュのインターバルのカウントダウン
+        if (_dashInterval > 0)
+        {
+            // 時間をカウント
+            _dashInterval -= Time.deltaTime;
+        }
+
+        // 攻撃のインターバルのカウントダウン
+        if (_attackInterval > 0)
+        {
+            // 時間をカウント
+            _attackInterval -= Time.deltaTime;
+        }
+
+        // 攻撃後の再行動可能になるまでの時間のカウントダウン
+        if (_attackStiffening > 0)
+        {
+            // 時間をカウント
+            _attackStiffening -= Time.deltaTime;
+        }
     }
 
     /// <summary>
@@ -113,52 +176,77 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     /// <param name="inputType">入力されたキー</param>
     public void PlayerWalking(E_InputType inputType)
     {
-        // 歩ける状態のときのみ
-        if (_playerState.GetState(E_PlayerState.Walk))
-        {
-            // 移動方向
-            int direction;
+        // 移動方向
+        int direction;
 
-            // 入力から移動方向を設定
-            if (inputType == E_InputType.Right)
+        // 入力から移動方向を設定
+        if (inputType == E_InputType.Right)
+        {
+            Quaternion lookVector = Quaternion.Euler(Vector3.zero);
+
+            // プレイヤーの向きを設定
+            SetRotate(lookVector);
+
+            // 壁と接触しているかどうか
+            if (!CheckWall.CheckHit(E_InputType.Right))
             {
-                // 壁と接触しているかどうか
-                if (!CheckWall.CheckHit(E_InputType.Right))
-                {
-                    // 右に移動
-                    direction = 1;
-                    _playerForword = 1;
-                }
-                else
-                {
-                    // 壁と接触中
-                    direction = 0;
-                }
-            }
-            else if (inputType == E_InputType.Left)
-            {
-                // 壁と接触しているかどうか
-                if (!CheckWall.CheckHit(E_InputType.Left))
-                {
-                    // 左に移動
-                    direction = -1;
-                    _playerForword = -1;
-                }
-                else
-                {
-                    // 壁と接触中
-                    direction = 0;
-                }
+                // 右に移動
+                direction = 1;
+                _playerForword = 1;
             }
             else
             {
-                // エラー入力
+                // 壁と接触中
                 direction = 0;
-                Debug.LogError("移動入力に異常あり:入力が左右以外");
             }
+        }
+        else if (inputType == E_InputType.Left)
+        {
+            Quaternion lookVector = Quaternion.Euler(new Vector3(0, 180, 0));
+            SetRotate(lookVector);
 
+            // 壁と接触しているかどうか
+            if (!CheckWall.CheckHit(E_InputType.Left))
+            {
+                // 左に移動
+                direction = -1;
+                _playerForword = -1;
+            }
+            else
+            {
+                // 壁と接触中
+                direction = 0;
+            }
+        }
+        else
+        {
+            // エラー入力
+            direction = 0;
+            Debug.LogError("移動入力に異常あり:入力が左右以外");
+        }
+
+        // 歩ける状態のときのみ
+        if (_playerState.GetState(E_PlayerState.Walk))
+        {
             // プレイヤーを移動
             _player.position += (Vector3)_walkValue * direction * Time.deltaTime;
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーの角度を設定するメソッド
+    /// </summary>
+    /// <param name="lookVector"></param>
+    private void SetRotate(Quaternion lookVector)
+    {
+        // ステータスから回転できるか判定
+        if (_playerState.GetState(E_PlayerState.Rotate))
+        {
+            // プレイヤーの向きを設定
+            if (transform.rotation != lookVector)
+            {
+                transform.rotation = lookVector;
+            }
         }
     }
 
@@ -219,13 +307,6 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
                 _nowDashTime = 0f;
             }
         }
-
-        // インターバルのカウントダウン
-        if (_dashInterval > 0)
-        {
-            // 時間をカウント
-            _dashInterval -= Time.deltaTime;
-        }
     }
 
     /// <summary>
@@ -272,5 +353,94 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     {
         // ジャンプトークンの回復
         _jumpToken = true;
+
+        // 攻撃中に着地したら移動不可にする
+        if (_attackStiffening > 0)
+        {
+            _playerState.SetState(E_PlayerState.Walk, false);
+        }
+    }
+
+    /// <summary>
+    /// プレイヤーの攻撃を行うメソッド
+    /// </summary>
+    public void PlayerAttack()
+    {
+        if (_playerState.GetState(E_PlayerState.Attack) && _attackInterval <= 0)
+        {
+            // 再攻撃までの時間を設定
+            _attackInterval = ATTACK_INTERVAL_TIME;
+
+            // 攻撃後の再行動可能になるまでの時間を設定
+            _attackStiffening = ATTACK_STIFFENING;
+
+            // プレイヤーのステータスを設定　攻撃だけtrue その他はfalse
+            _playerState.SetAllState(false) ;
+            _playerState.SetState(E_PlayerState.Attack, true);
+
+            // 空中だった場合、移動のみ許可する
+            if (!CheckFloor.CheckLanding())
+            {
+                // 歩行のみtrueに設定
+                _playerState.SetState(E_PlayerState.Walk, true);
+            }
+
+            // 攻撃硬直が終わったらステータスを戻す
+            _playerState.SetAllState(true, ATTACK_STIFFENING);
+
+            // 攻撃を実行
+            StartCoroutine(Attack());
+        }
+    }
+
+    public void PlayerSkill(E_InputType skillType)
+    {
+        switch (skillType)
+        {
+            case E_InputType.Skill1:
+                Skill1();
+                break;
+
+            case E_InputType.Skill2:
+                // Skill2を実装
+                break;
+        }
+
+    }
+
+    private void Skill1()
+    {
+        if (_playerState.GetState(E_PlayerState.Skill1))
+        {
+            if (_playerParameter.GetPlayerSp() >= SKILL1_COST)
+            {
+                Quaternion lookVector = default;
+                int right = 1;
+                int left = -1;
+                if (_playerForword == right)
+                {
+                    lookVector = Quaternion.Euler(Vector3.zero);
+                }
+                else if (_playerForword == left)
+                {
+                    lookVector = Quaternion.Euler(new Vector3(0, 180, 0));
+                }
+                Instantiate(_skill1_Bullet, transform.position, lookVector);
+
+                _playerState.SetAllState(false);
+                _playerState.SetAllState(true, )
+            }
+            else
+            {
+                print("SP足りないよ");
+            }
+        }
+    }
+
+    private IEnumerator Attack()
+    {
+        _attackCollider.enabled = true;
+        yield return new WaitForSeconds(ATTACK_LIFE_TIME);
+        _attackCollider.enabled = false;
     }
 }

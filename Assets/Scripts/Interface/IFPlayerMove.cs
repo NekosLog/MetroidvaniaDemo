@@ -10,5 +10,6 @@ public interface IFPlayerMove
     void PlayerJump();
 
     void PlayerDash();
+    void PlayerAttack();
 
 }
