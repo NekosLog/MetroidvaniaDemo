@@ -8,15 +8,21 @@ using UnityEngine;
 public class PlayerParamater : MonoBehaviour, IFPlayerParameter 
 {
     [SerializeField, Tooltip("プレイヤーのHPの初期値")]
-    private readonly int StartPlayerHp = 100;
+    private int StartPlayerHp = 100;   /*デバッグ用*/
     [SerializeField, Tooltip("プレイヤーのSPの初期値")]
-    private readonly int StartPlayerSp = 100;
+    private int StartPlayerSp = 100;   /*デバッグ用*/
 
     private const int PLAYER_MAX_HP = 100;
     private const int PLAYER_MAX_SP = 100;
 
     private int _playerHp = default;
     private int _playerSp = default;
+
+    private void Awake()
+    {
+        _playerHp = StartPlayerHp;
+        _playerSp = StartPlayerSp;
+    }
 
     public int GetPlayerHp()
     {

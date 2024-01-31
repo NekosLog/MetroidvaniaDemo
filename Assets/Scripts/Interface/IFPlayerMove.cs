@@ -6,10 +6,11 @@
 public interface IFPlayerMove 
 {
     void PlayerWalking(E_InputType inputType);
-
     void PlayerJump();
-
     void PlayerDash();
     void PlayerAttack();
-
+    void PlayerSkill(E_InputType skillType);
+    void PlayerHeal();
+    void PlayerHealStart();
+    void PlayerHealExit();
 }

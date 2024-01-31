@@ -393,6 +393,10 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         }
     }
 
+    /// <summary>
+    /// プレイヤーのスキルを発動するメソッド
+    /// </summary>
+    /// <param name="skillType">スキルの番号</param>
     public void PlayerSkill(E_InputType skillType)
     {
         switch (skillType)
@@ -408,6 +412,10 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
     }
 
+    /// <summary>
+    /// スキル１に登録されているスキルを発動するメソッド<br />
+    /// いずれはイベントに変えてスキル変更可能にしたい
+    /// </summary>
     private void Skill1()
     {
         if (_playerState.GetState(E_PlayerState.Skill1))
@@ -428,7 +436,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
                 Instantiate(_skill1_Bullet, transform.position, lookVector);
 
                 _playerState.SetAllState(false);
-                _playerState.SetAllState(true, )
+                _playerState.SetAllState(true, SKILL1_STIFFENING);
             }
             else
             {
@@ -437,6 +445,107 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         }
     }
 
+    // プレイヤーが回復を行っている時間
+    private float _playerHealTime = default;
+
+    // プレイヤーが回復を開始しているかどうかの確認フラグ
+    private bool _isStartHeal = false;
+
+    // プレイヤーの１回あたりの回復完了までの時間
+    private const float HEAL_COMPLETE_TIME = 1f;
+
+    // プレイヤーの１回あたりの回復に使用するSP量
+    private const int HEAL_COST = 50;
+
+    // プレイヤーの１回あたりの回復で増えるHP量
+    private const int HEAL_ADD_HP = 20;
+
+    /// <summary>
+    /// プレイヤーの回復を行うメソッド
+    /// </summary>
+    public void PlayerHeal()
+    {
+        // 回復を開始している場合実行
+        if (_isStartHeal)
+        {
+            // 消費SPが足りなかった場合はキャンセルする
+            if (_playerParameter.GetPlayerSp() < HEAL_COST)
+            {
+                // 回復終了処理を実行
+                PlayerHealExit();
+                return;
+            }
+
+            // 回復時間を測る
+            _playerHealTime += Time.deltaTime;
+
+            // 回復時間が完了時間を超えたら回復実行
+            if (_playerHealTime >= HEAL_COMPLETE_TIME)
+            {
+                // 回復時間をリセット
+                _playerHealTime = 0f;
+
+                // プレイヤーのパラメーターを変更する
+                _playerParameter.AddPlayerHp(HEAL_ADD_HP);  // HPを設定
+                _playerParameter.AddPlayerSp(-HEAL_COST);   // SPを設定
+
+                // パーティクル再生　素材ができたらここに書く
+                /* 
+                */
+
+                print("回復したよ～ん");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 回復開始時の処理
+    /// </summary>
+    public void PlayerHealStart()
+    {
+        // プレイヤーのステータスと着地判定を確認　回復可能かつ着地中
+        if (_playerState.GetState(E_PlayerState.Heal) && CheckFloor.CheckLanding())
+        {
+            // 消費SPが足りているか確認
+            if (_playerParameter.GetPlayerSp() >= HEAL_COST)
+            {
+                // プレイヤーのステータスを設定　回復のみTrue　それ以外False
+                _playerState.SetAllState(false);
+                _playerState.SetState(E_PlayerState.Heal, true);
+
+                // 回復の開始フラグを立てる
+                _isStartHeal = true;
+            }
+            // 消費SPが足りない場合
+            else
+            {
+                print("SPたりないよ～ん");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 回復終了時の処理
+    /// </summary>
+    public void PlayerHealExit()
+    {
+        // 回復を開始していた場合のみ
+        if (_isStartHeal)
+        {
+            // プレイヤーのステータスを設定　全てTrue
+            _playerState.SetAllState(true);
+
+            // プレイヤーの回復時間をリセット
+            _playerHealTime = 0f;
+
+            // 回復の開始フラグを取り消す
+            _isStartHeal = false;
+        }
+    }
+
+    /// <summary>
+    /// 攻撃判定を生成するコルーチン
+    /// </summary>
     private IEnumerator Attack()
     {
         _attackCollider.enabled = true;
