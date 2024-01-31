@@ -58,7 +58,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
     // 攻撃の判定コライダー
     [SerializeField]
-    private Collider2D _attackCollider = default;
+    private GameObject _attackCollider = default;
 
     // スキル１で発射する球
     [SerializeField]
@@ -437,6 +437,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
 
                 _playerState.SetAllState(false);
                 _playerState.SetAllState(true, SKILL1_STIFFENING);
+
+                _playerParameter.AddPlayerSp(-SKILL1_COST);
             }
             else
             {
@@ -548,8 +550,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     /// </summary>
     private IEnumerator Attack()
     {
-        _attackCollider.enabled = true;
+        _attackCollider.SetActive(true);
         yield return new WaitForSeconds(ATTACK_LIFE_TIME);
-        _attackCollider.enabled = false;
+        _attackCollider.SetActive(false);
     }
 }
