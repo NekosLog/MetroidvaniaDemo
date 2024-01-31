@@ -6,6 +6,7 @@ TagManager:
   tags:
   - StageDatas
   - Enemy
+  - StageObject
   layers:
   - Default
   - TransparentFX
