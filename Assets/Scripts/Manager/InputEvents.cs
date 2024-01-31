@@ -71,11 +71,18 @@ public class InputEvents:MonoBehaviour
                 break;
 
             case E_InputType.Heal:
-
+                if (_inputTimer[(int)inputType] == 0)
+                {
+                    _playerMove.PlayerHealStart();
+                }
+                _playerMove.PlayerHeal();
                 break;
 
             case E_InputType.Skill1:
-
+                if (_inputTimer[(int)inputType] == 0)
+                {
+                    _playerMove.PlayerSkill(inputType);
+                }
                 break;
 
             case E_InputType.Skill2:
@@ -134,7 +141,7 @@ public class InputEvents:MonoBehaviour
                 break;
 
             case E_InputType.Heal:
-
+                _playerMove.PlayerHealExit();
                 break;
 
             case E_InputType.Skill1:
