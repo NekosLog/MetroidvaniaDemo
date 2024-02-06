@@ -32,11 +32,12 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     // 攻撃判定の持続時間
     private const float ATTACK_LIFE_TIME = 0.1f;
 
-    // スキル１の消費SP量
-    private const int SKILL1_COST = 30;
-
     // スキル１後の再行動可能になるまでの時間　硬直
     private const float SKILL1_STIFFENING = 0.3f;
+
+    // プレイヤーの１回あたりの回復完了までの時間
+    private const float HEAL_COMPLETE_TIME = 1f;
+
     #endregion
 
     #region シリアライズ
@@ -106,11 +107,17 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     // ダッシュ中フラグ　trueでダッシュ中
     private bool _nowDash = false;
 
+    // プレイヤーが回復を開始しているかどうかの確認フラグ
+    private bool _isStartHeal = false;
+
     // 攻撃の使用間隔を測る変数
     private float _attackInterval = default;
 
     // 攻撃後の再行動可能になるまでの時間を測る変数
     private float _attackStiffening = default;
+
+    // プレイヤーが回復を行っている時間
+    private float _playerHealTime = default;
 
     #endregion
 
@@ -420,7 +427,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     {
         if (_playerState.GetState(E_PlayerState.Skill1))
         {
-            if (_playerParameter.GetPlayerSp() >= SKILL1_COST)
+            if (_playerParameter.GetPlayerSp() >= _playerParameter.GetSkill1_Cost())
             {
                 Quaternion lookVector = default;
                 int right = 1;
@@ -438,7 +445,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
                 _playerState.SetAllState(false);
                 _playerState.SetAllState(true, SKILL1_STIFFENING);
 
-                _playerParameter.AddPlayerSp(-SKILL1_COST);
+                _playerParameter.AddPlayerSp(-_playerParameter.GetSkill1_Cost());
             }
             else
             {
@@ -447,20 +454,6 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         }
     }
 
-    // プレイヤーが回復を行っている時間
-    private float _playerHealTime = default;
-
-    // プレイヤーが回復を開始しているかどうかの確認フラグ
-    private bool _isStartHeal = false;
-
-    // プレイヤーの１回あたりの回復完了までの時間
-    private const float HEAL_COMPLETE_TIME = 1f;
-
-    // プレイヤーの１回あたりの回復に使用するSP量
-    private const int HEAL_COST = 50;
-
-    // プレイヤーの１回あたりの回復で増えるHP量
-    private const int HEAL_ADD_HP = 20;
 
     /// <summary>
     /// プレイヤーの回復を行うメソッド
@@ -471,7 +464,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         if (_isStartHeal)
         {
             // 消費SPが足りなかった場合はキャンセルする
-            if (_playerParameter.GetPlayerSp() < HEAL_COST)
+            if (_playerParameter.GetPlayerSp() < _playerParameter.GetHeal_Cost())
             {
                 // 回復終了処理を実行
                 PlayerHealExit();
@@ -488,8 +481,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
                 _playerHealTime = 0f;
 
                 // プレイヤーのパラメーターを変更する
-                _playerParameter.AddPlayerHp(HEAL_ADD_HP);  // HPを設定
-                _playerParameter.AddPlayerSp(-HEAL_COST);   // SPを設定
+                _playerParameter.AddPlayerHp(_playerParameter.GetHeal_Value());  // HPを設定
+                _playerParameter.AddPlayerSp(-_playerParameter.GetHeal_Cost());   // SPを設定
 
                 // パーティクル再生　素材ができたらここに書く
                 /* 
@@ -509,7 +502,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         if (_playerState.GetState(E_PlayerState.Heal) && CheckFloor.CheckLanding())
         {
             // 消費SPが足りているか確認
-            if (_playerParameter.GetPlayerSp() >= HEAL_COST)
+            if (_playerParameter.GetPlayerSp() >= _playerParameter.GetHeal_Cost())
             {
                 // プレイヤーのステータスを設定　回復のみTrue　それ以外False
                 _playerState.SetAllState(false);
