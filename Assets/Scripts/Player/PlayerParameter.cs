@@ -14,7 +14,7 @@ public class PlayerParamater : MonoBehaviour, IFPlayerParameter
     private int _startPlayerHp = 5;
     
     // プレイヤーのSPの初期値
-    private int _startPlayerSp = 500;
+    private int _startPlayerSp = 100;
 
     // プレイヤーの通常攻撃の与ダメージ
     private int _attack_Damage = 2;
@@ -32,10 +32,10 @@ public class PlayerParamater : MonoBehaviour, IFPlayerParameter
     private int _heal_Value = 1;
 
     // プレイヤーのHPの最大値
-    private int _maxPlayerHP = 8;
+    private int _maxPlayerHP = 5;
 
     // プレイヤーのSPの最大値
-    private int _maxPlayerSP = 500;
+    private int _maxPlayerSP = 100;
 
     // プレイヤーの現在HP
     private int _playerHP = default;
