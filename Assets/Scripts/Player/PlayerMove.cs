@@ -463,8 +463,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         // 回復を開始している場合実行
         if (_isStartHeal)
         {
-            // 消費SPが足りなかった場合はキャンセルする
-            if (_playerParameter.GetPlayerSp() < _playerParameter.GetHeal_Cost())
+            // 消費SPが足りなかった場合とHPが満タンの場合はキャンセルする
+            if (_playerParameter.GetPlayerSp() < _playerParameter.GetHeal_Cost() || _playerParameter.IsHPMax())
             {
                 // 回復終了処理を実行
                 PlayerHealExit();
@@ -498,8 +498,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     /// </summary>
     public void PlayerHealStart()
     {
-        // プレイヤーのステータスと着地判定を確認　回復可能かつ着地中
-        if (_playerState.GetState(E_PlayerState.Heal) && CheckFloor.CheckLanding())
+        // プレイヤーのステータスと着地判定を確認　回復可能かつ着地中かつHPが最大以外
+        if (_playerState.GetState(E_PlayerState.Heal) && CheckFloor.CheckLanding() && !_playerParameter.IsHPMax())
         {
             // 消費SPが足りているか確認
             if (_playerParameter.GetPlayerSp() >= _playerParameter.GetHeal_Cost())

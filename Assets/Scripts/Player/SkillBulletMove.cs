@@ -46,11 +46,9 @@ public class SkillBulletMove : MonoBehaviour
             case "Enemy":
                 Destroy(collision.gameObject);
                 Destroy(gameObject);
-                print("たまたま");
                 break;
 
             default:
-                print("これじゃない");
                 break;
         }
     }

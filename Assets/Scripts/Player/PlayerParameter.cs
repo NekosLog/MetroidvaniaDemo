@@ -7,11 +7,14 @@ using UnityEngine;
  
 public class PlayerParamater : MonoBehaviour, IFPlayerParameter 
 {
+    // InGameUIManagerのインターフェース
+    private IFInGameUIManager _inGameUIManager = default;
+
     //プレイヤーのHPの初期値
     private int _startPlayerHp = 5;
     
     // プレイヤーのSPの初期値
-    private int _startPlayerSp = 100;
+    private int _startPlayerSp = 500;
 
     // プレイヤーの通常攻撃の与ダメージ
     private int _attack_Damage = 2;
@@ -29,10 +32,10 @@ public class PlayerParamater : MonoBehaviour, IFPlayerParameter
     private int _heal_Value = 1;
 
     // プレイヤーのHPの最大値
-    private int _maxPlayerHP = 5;
+    private int _maxPlayerHP = 8;
 
     // プレイヤーのSPの最大値
-    private int _maxPlayerSP = 100;
+    private int _maxPlayerSP = 500;
 
     // プレイヤーの現在HP
     private int _playerHP = default;
@@ -42,8 +45,20 @@ public class PlayerParamater : MonoBehaviour, IFPlayerParameter
 
     private void Awake()
     {
+        // InGameManagerを取得
+        _inGameUIManager = GameObject.FindWithTag("Manager").GetComponent<IFInGameUIManager>();
+
+        // HPの初期値を設定
         _playerHP = _startPlayerHp;
+        // HPのUIの初期設定を行う
+        _inGameUIManager.SetMaxHPUI(_maxPlayerHP);
+        _inGameUIManager.ChengePlayerHPUI(_playerHP);
+
+        // SPの初期値を設定
         _playerSP = _startPlayerSp;
+        // SPのUIの初期設定を行う
+        _inGameUIManager.SetMaxSPUI(_maxPlayerSP);
+        _inGameUIManager.ChengePlayerSPUI(_playerSP);
     }
 
     public int GetPlayerHp()
@@ -84,12 +99,14 @@ public class PlayerParamater : MonoBehaviour, IFPlayerParameter
     {
         _playerHP += value;
         _playerHP = Mathf.Clamp(_playerHP, 0, _maxPlayerHP);
+        _inGameUIManager.ChengePlayerHPUI(_playerHP);
     }
 
     public void AddPlayerSp(int value)
     {
         _playerSP += value;
         _playerSP = Mathf.Clamp(_playerSP, 0, _maxPlayerSP);
+        _inGameUIManager.ChengePlayerSPUI(_playerSP);
     }
 
     public int GetAttack_Damage()
