@@ -10,11 +10,16 @@ public class PlayerAttackCollider : MonoBehaviour {
     [SerializeField]
     private int _addSp = 30;
 
+    // ヒットストップ用クラス
+    private IFHitStopManager _hitStopManager = default;
+
     private IFPlayerParameter _playerParameter = default;
 
     private void Awake()
     {
-        _playerParameter = GameObject.FindWithTag("Player").GetComponent<PlayerParamater>();
+        // クラスの設定
+        _playerParameter = GameObject.FindWithTag("Player").GetComponent<PlayerParameter>();
+        _hitStopManager = GameObject.FindWithTag("Manager").GetComponent<HitStopManager>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -22,7 +27,9 @@ public class PlayerAttackCollider : MonoBehaviour {
         if (collision.tag == "Enemy")
         {
             _playerParameter.AddPlayerSp(_addSp);
-            Destroy(collision.gameObject);
+            collision.GetComponent<EnemyParameter>().EnemyDamage(_playerParameter.GetAttack_Damage());
+            float hitStopTime = 0.05f;
+            _hitStopManager.HitStopEvent(hitStopTime);
         }
     }
 }

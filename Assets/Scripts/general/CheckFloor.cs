@@ -13,10 +13,10 @@ public class CheckFloor
     public CheckFloor() { }
 
     /// <summary>
-    /// コンストラクタ<br>
+    /// コンストラクタ<br />
     /// 自身のオブジェクトを代入する
     /// </summary>
-    /// <param name="thisTransform"></param>
+    /// <param name="thisTransform">代入するTransform</param>
     public CheckFloor(Transform thisTransform)
     {
         _thisTransform = thisTransform;
@@ -27,8 +27,14 @@ public class CheckFloor
     // オブジェクトの太さ　着地判定の幅を決めるのに使用　横幅の半分
     private float _objectDepth = default;
 
-    // オブジェクトの下の幅　着地判定の出始めを決めるのに使用
-    private float _objectBottom = default;
+    // オブジェクトの縦幅　着地判定の出始めを決めるのに使用
+    private float _objectButtom = default;
+
+    // 接触判定の細かさ　上端と下端の間に何本の判定をとるか
+    private int _checkValue = default;
+
+    // 判定の間隔　上下端と本数によって変動
+    private float _checkDistance = default;
 
     // 処理を行うオブジェクトのトランスフォーム
     private Transform _thisTransform = default;
@@ -40,28 +46,55 @@ public class CheckFloor
     public bool CheckLanding()
     {
         // レイの長さ
-        float rayLength = 0.02f;
+        float rayLength = 0.1f;
 
         // ステージのレイヤーマスク
         LayerMask groundLayer = 1 << 6;
 
         // レイの生成と判定
-        RaycastHit2D hit1 = Physics2D.Raycast(_thisTransform.position + _objectDepth * Vector3.right - _objectBottom * Vector3.up, Vector2.down, rayLength, groundLayer);
-        RaycastHit2D hit2 = Physics2D.Raycast(_thisTransform.position - _objectDepth * Vector3.right - _objectBottom * Vector3.up, Vector2.down, rayLength, groundLayer);
+        for (int i = 0; i < _checkValue; i++)
+        {
+            // オブジェクトと接触しているか判定
+            RaycastHit2D isHit = Physics2D.Raycast(_thisTransform.position + _objectButtom * Vector3.down + (-_objectDepth + _checkDistance * i) * Vector3.right, Vector3.down, rayLength, groundLayer);
 
-        // 結果を返す
-        return hit1.collider != null || hit2.collider != null;
+            // オブジェクトに当たっているかどうか
+            if (isHit.collider != null)
+            {
+                // ぶつかっている場合
+                return true;
+            }
+        }
+        // ぶつかっていない場合
+        return false;
     }
 
     /// <summary>
     /// オブジェクトのサイズを設定するメソッド
     /// </summary>
     /// <param name="objectDepth">オブジェクトの横幅</param>
-    /// <param name="objectBottom">オブジェクトの下幅</param>
-    public void SetObjectSize(float objectDepth, float objectBottom)
+    /// <param name="objectHeight">オブジェクトの下幅</param>
+    public void SetObjectSize(float objectDepth, float objectHeight, int checkValue)
     {
+        // 判定の細かさの最低値
+        int checkMinimunValue = 2;
+
         // 各値を設定
         _objectDepth = objectDepth / 2; // 横幅の半分
-        _objectBottom = objectBottom;
+        _objectButtom = objectHeight / 2; // 縦幅の半分
+
+        // 判定の細かさの最低値を下回っていないか
+        if (checkValue >= checkMinimunValue)
+        {
+            // 上回っている
+            _checkValue = checkValue;
+        }
+        else
+        {
+            // 下回っている
+            _checkValue = checkMinimunValue;
+        }
+
+        // 値から判定の間隔を設定　間隔を求めるため上下幅÷(本数ー１)
+        _checkDistance = objectHeight / (_checkValue - 1);
     }
 }

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81b2bd263e1e9064797e8e6b849b0077, type: 3}
+  m_Name: InGameStageDatas
+  m_EditorClassIdentifier: 
+  StageParameterList:
+  - StageNumber: FirstArea
+    CameraOrigin: {x: 5, y: 0}
+    StageWidth: 30
+    StageHeight: 6
+  - StageNumber: SecondArea
+    CameraOrigin: {x: 49, y: -3}
+    StageWidth: 21
+    StageHeight: 18
+  - StageNumber: ThirdArea
+    CameraOrigin: {x: 90, y: -0.5}
+    StageWidth: 11
+    StageHeight: 22

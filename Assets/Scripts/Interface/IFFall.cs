@@ -5,7 +5,7 @@
 
 public interface IFFall 
 {
-    public void FallObject(bool isLanding);
+    public void FallObject(bool isLanding, bool isHitCeiling);
 
     public void SetFallValue(float value);
 }

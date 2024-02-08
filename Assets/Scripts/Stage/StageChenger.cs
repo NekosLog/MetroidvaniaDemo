@@ -12,10 +12,10 @@ public class StageChenger : MonoBehaviour
     private CameraMove _cameraMove = default;
 
     [SerializeField]
-    private Vector2 _spawnPosition = default;
+    private Transform _spawnPosition = default;
 
     [SerializeField]
-    private E_StageNumber _stageNumber = default;
+    private E_StageNumber _nextStageNumber = default;
     private void Awake()
     {
         _stageDatas = GameObject.FindWithTag("StageDatas").GetComponent<StageDatasManager>().GetStageDatas();
@@ -27,8 +27,8 @@ public class StageChenger : MonoBehaviour
         print("当たった");
         if (collision.tag == "Player")
         {
-            Teleportation(collision.transform, _spawnPosition);
-            _cameraMove.SetStage(SearchStage(_stageNumber.ToString()));
+            Teleportation(collision.transform, _spawnPosition.position);
+            _cameraMove.SetStage(SearchStage(_nextStageNumber.ToString()));
         }
     }
 

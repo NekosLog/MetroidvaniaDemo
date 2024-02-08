@@ -9,6 +9,7 @@ TagManager:
   - StageObject
   - HPPointer
   - Manager
+  - DamageCollider
   layers:
   - Default
   - TransparentFX

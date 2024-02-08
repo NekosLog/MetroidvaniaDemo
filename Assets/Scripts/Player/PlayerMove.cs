@@ -30,7 +30,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     private const float ATTACK_STIFFENING = 0.3f;
 
     // 攻撃判定の持続時間
-    private const float ATTACK_LIFE_TIME = 0.1f;
+    private const float ATTACK_LIFE_TIME = 0.06f;
 
     // スキル１後の再行動可能になるまでの時間　硬直
     private const float SKILL1_STIFFENING = 0.3f;
@@ -41,28 +41,22 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     #endregion
 
     #region シリアライズ
-    // プレイヤーの横幅
-    [SerializeField]
+    [SerializeField, Tooltip("プレイヤーの横幅")]
     private float _playerDepth = default;
 
-    // プレイヤーの上の幅
-    [SerializeField]
-    private float _playerTop = default;
+    [SerializeField, Tooltip("プレイヤーの縦幅")]
+    private float _playerHeight = default;
 
-    // プレイヤーの下の幅
-    [SerializeField]
-    private float _playerBottom = default;
-
-    // 接触判定の細かさ
-    [SerializeField]
+    [SerializeField, Tooltip("接触判定の細かさ")]
     private int _checkValue = default;
 
-    // 攻撃の判定コライダー
-    [SerializeField]
+    [SerializeField, Tooltip("攻撃の判定コライダー")]
     private GameObject _attackCollider = default;
 
-    // スキル１で発射する球
-    [SerializeField]
+    [SerializeField, Tooltip("攻撃のコライダーの位置")]
+    private Transform _attackColliderPosition = default;
+
+    [SerializeField, Tooltip("スキル１で発射する球")]
     private GameObject _skill1_Bullet = default;
     #endregion
 
@@ -132,12 +126,14 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         // _playerStateに自身が持つPlayerStateを代入
         _playerState = this.GetComponent<PlayerState>();
         // _playerParameterに自身が持つPlayerParameterを代入
-        _playerParameter = this.GetComponent<PlayerParamater>();
-        // Fallの初期値設定
-        CheckFloor.SetObjectSize(_playerDepth, _playerBottom);
+        _playerParameter = this.GetComponent<PlayerParameter>();
 
+        // CheckFloorの初期値設定
+        CheckFloor.SetObjectSize(_playerDepth, _playerHeight, _checkValue);
+        // CheckCeilingの初期設定
+        CheckCeiling.SetObjectSize(_playerDepth, _playerHeight, _checkValue);
         // CheckWallの初期値設定
-        CheckWall.SetValue(_playerTop, _playerBottom, _playerDepth, _checkValue);
+        CheckWall.SetValue(_playerHeight, _playerDepth, _checkValue);
     }
 
     private void Update()
@@ -149,7 +145,7 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
         Dash(_dashTime);
 
         // 落下処理
-        _fall.FallObject(CheckFloor.CheckLanding());
+        _fall.FallObject(CheckFloor.CheckLanding(), CheckCeiling.CheckHitCeiling());
         
     }
 
@@ -543,6 +539,8 @@ public class PlayerMove : MoveBase, IFPlayerMove, IFLandingEvent
     /// </summary>
     private IEnumerator Attack()
     {
+        _attackCollider.transform.position = _attackColliderPosition.position;
+        _attackCollider.transform.rotation = _attackColliderPosition.rotation;
         _attackCollider.SetActive(true);
         yield return new WaitForSeconds(ATTACK_LIFE_TIME);
         _attackCollider.SetActive(false);

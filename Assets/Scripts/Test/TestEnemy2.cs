@@ -7,12 +7,12 @@ using UnityEngine;
 
 public class TestEnemy2 : MoveBase
 {
-	private int _speed = -1;
+	private float _speed = -2.5f;
 	E_InputType forward = E_InputType.Left;
 	private void Start()
 	{
-		CheckFloor.SetObjectSize(1f, 0.5f);
-		CheckWall.SetValue(0.5f, 0.5f, 1, 0);
+		CheckFloor.SetObjectSize(1f, 0.5f, 3);
+		CheckWall.SetValue(1, 1, 3);
 	}
 
 	private void Update()

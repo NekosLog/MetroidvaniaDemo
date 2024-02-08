@@ -8,6 +8,12 @@ using System.Collections;
  
 public class SkillBulletMove : MonoBehaviour
 {
+    // ヒットストップ用クラス
+    private IFHitStopManager _hitStopManager = default;
+
+    // プレイヤーのパラメータクラス
+    private IFPlayerParameter _playerParameter = default;
+
     [SerializeField, Tooltip("弾速")]
     private float _bulletSpeed = 10f;
 
@@ -19,6 +25,11 @@ public class SkillBulletMove : MonoBehaviour
 
     private void Awake()
     {
+        // クラスの設定
+        _playerParameter = GameObject.FindWithTag("Player").GetComponent<PlayerParameter>();
+        _hitStopManager = GameObject.FindWithTag("Manager").GetComponent<HitStopManager>();
+
+        // 自分のレンダラーを取得
         _myRenderer = GetComponent<Renderer>();
     }
 
@@ -44,7 +55,9 @@ public class SkillBulletMove : MonoBehaviour
         switch (collision.tag)
         {
             case "Enemy":
-                Destroy(collision.gameObject);
+                collision.GetComponent<EnemyParameter>().EnemyDamage(_playerParameter.GetSkill1_Damage());
+                float hitStopTime = 0.15f;
+                _hitStopManager.HitStopEvent(hitStopTime);
                 Destroy(gameObject);
                 break;
 

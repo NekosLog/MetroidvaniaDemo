@@ -31,10 +31,16 @@ public class Fall : MonoBehaviour, IFFall
     /// <summary>
     /// オブジェクトの落下や上昇を行うメソッド
     /// </summary>
-    public void FallObject(bool isLanding)
+    public void FallObject(bool isLanding, bool isHitCeiling)
     {
+        // 天井にぶつかったかどうか
+        if (_fallValue.y > 0 && isHitCeiling)
+        {
+            // 速度を０にする
+            _fallValue = Vector2.zero;
+        }
         // 着地しているかどうか
-        if (_fallValue.y <= 0 && isLanding)
+        else if (_fallValue.y <= 0 && isLanding)
         {
             if (_fallValue.y != 0)
             {

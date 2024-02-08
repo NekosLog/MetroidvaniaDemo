@@ -14,8 +14,9 @@ public class TestEnemy : MoveBase, IFLandingEvent
 	private void Start()
 	{
 		_fall = this.GetComponent<IFFall>();
-		CheckFloor.SetObjectSize(1f,0.5f);
-		CheckWall.SetValue(0.5f,0.5f,1,0);
+		CheckFloor.SetObjectSize(0.9f,0.9f, 3);
+		CheckCeiling.SetObjectSize(0.9f, 0.9f, 3);
+		CheckWall.SetValue(0.9f,0.9f,3);
 	}
 
 	private void Update()
@@ -35,7 +36,7 @@ public class TestEnemy : MoveBase, IFLandingEvent
 			_speed = _speed * -1;
         }
 
-		_fall.FallObject(CheckFloor.CheckLanding());
+		_fall.FallObject(CheckFloor.CheckLanding(), CheckCeiling.CheckHitCeiling());
 	}
 
     public void LandingEvent()

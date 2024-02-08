@@ -43,7 +43,7 @@ public class InGameUIManager : MonoBehaviour, IFInGameUIManager {
     private int _playerMaxSP = default;
 
     // HPポインターの設置間隔
-    private const float HP_POINTER_DISTANCE = 20f;
+    private const float HP_POINTER_DISTANCE = 100f;
 
 
     public void SetMaxHPUI(int maxHP)

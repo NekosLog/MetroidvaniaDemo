@@ -5,7 +5,7 @@
 
 using UnityEngine;
  
-public class PlayerParamater : MonoBehaviour, IFPlayerParameter 
+public class PlayerParameter : MonoBehaviour, IFPlayerParameter 
 {
     // InGameUIManagerのインターフェース
     private IFInGameUIManager _inGameUIManager = default;

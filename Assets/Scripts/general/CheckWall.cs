@@ -20,7 +20,7 @@ public class CheckWall
     private Transform _thisTransform = default;
     
 	// オブジェクトの下の幅　接触判定の下端を決めるのに使用
-    private float _objectBottom = default;
+    private float _objectButtom = default;
 
     // オブジェクトの太さ　着地判定の幅を決めるのに使用　横幅の半分
     private float _objectDepth = default;
@@ -38,16 +38,16 @@ public class CheckWall
     /// </summary>
     /// <param name="top">オブジェクトの上の幅</param>
     /// <param name="bottom">オブジェクトの下の幅</param>
-    /// <param name="depth">オブジェクトの横幅</param>
+    /// <param name="objectDepth">オブジェクトの横幅</param>
     /// <param name="checkValue">判定の細かさ</param>
-    public void SetValue(float top, float bottom, float depth, int checkValue)
+    public void SetValue(float objectHeight, float objectDepth, int checkValue)
     {
 		// 判定の細かさの最低値
 		int checkMinimunValue = 2;
 
 		// 各値を設定
-		_objectDepth = depth / 2; // 横幅の半分
-		_objectBottom = bottom;
+		_objectDepth = objectDepth / 2; // 横幅の半分
+		_objectButtom = objectHeight / 2; // 縦幅の半分
 
         // 判定の細かさの最低値を下回っていないか
         if (checkValue >= checkMinimunValue)
@@ -62,7 +62,7 @@ public class CheckWall
         }
 
 		// 値から判定の間隔を設定　間隔を求めるため上下幅÷(本数ー１)
-		_checkDistance = (_objectBottom + top) / (_checkValue - 1);
+		_checkDistance = objectHeight / (_checkValue - 1);
     }
 
 
@@ -91,7 +91,7 @@ public class CheckWall
         }
 
         // レイの長さ
-        float rayLength = 0.05f;
+        float rayLength = 0.1f;
 
         // ステージのレイヤーマスク
         LayerMask groundLayer = 1 << 6;
@@ -100,7 +100,7 @@ public class CheckWall
         for (int i = 0; i < _checkValue; i++)
         {
             // オブジェクトと接触しているか判定
-            RaycastHit2D isHit = Physics2D.Raycast(_thisTransform.position + _objectDepth * forwardVector - (_objectBottom - _checkDistance * i) * Vector3.up, forwardVector, rayLength, groundLayer);
+            RaycastHit2D isHit = Physics2D.Raycast(_thisTransform.position + _objectDepth * forwardVector - (_objectButtom - _checkDistance * i) * Vector3.up, forwardVector, rayLength, groundLayer);
 
             // オブジェクトに当たっているかどうか
             if (isHit.collider != null)
