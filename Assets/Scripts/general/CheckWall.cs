@@ -7,10 +7,20 @@ using UnityEngine;
  
 public class CheckWall
 {
+    /// <summary>
+    /// コンストラクタ<br />
+    /// 使用しない
+    /// </summary>
     public CheckWall() { }
 
+    /// <summary>
+    /// コンストラクタ<br />
+    /// 自身のオブジェクトを代入する
+    /// </summary>
+    /// <param name="thisTransform">代入するTransform</param>
     public CheckWall(Transform thisTransform)
     {
+        // 自身のTransformを取得
         _thisTransform = thisTransform;
     }
 

@@ -8,6 +8,7 @@ using UnityEngine;
 public class CheckFloor
 {
     /// <summary>
+    /// コンストラクタ<br />
     /// 使用しない
     /// </summary>
     public CheckFloor() { }
@@ -19,6 +20,7 @@ public class CheckFloor
     /// <param name="thisTransform">代入するTransform</param>
     public CheckFloor(Transform thisTransform)
     {
+        // 自身のTransformを取得
         _thisTransform = thisTransform;
     }
 

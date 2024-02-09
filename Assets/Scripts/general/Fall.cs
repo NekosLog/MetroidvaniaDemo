@@ -23,8 +23,12 @@ public class Fall : MonoBehaviour, IFFall
     // 着地時のイベントを渡すインターフェース
     private IFLandingEvent _landingEvent = default;
 
+    /// <summary>
+    /// 初期設定　クラスを取得
+    /// </summary>
     private void Start()
     {
+        // 着地時のイベントを取得
         _landingEvent = this.GetComponent<IFLandingEvent>();
     }
 

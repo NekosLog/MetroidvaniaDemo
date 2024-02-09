@@ -9,6 +9,7 @@ using System.Collections;
 public class CheckCeiling
 {
     /// <summary>
+    /// コンストラクタ<br />
     /// 使用しない
     /// </summary>
     public CheckCeiling() { }
@@ -20,6 +21,7 @@ public class CheckCeiling
     /// <param name="thisTransform">代入するTransform</param>
     public CheckCeiling(Transform thisTransform)
     {
+        // 自身のTransformを取得
         _thisTransform = thisTransform;
     }
 
